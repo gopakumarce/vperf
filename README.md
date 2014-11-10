@@ -4,14 +4,16 @@ vperf
 Bandwidth / Performance testing similar to iperf
 
 FAQ:
------
+=====
 
-1. What is vperf ?
+What is vperf ?
+=================
 
 Its a small utility that tries to do something like iperf - measure the end to end bandwidth.
 As for the name, its just a "v" instead of "i", thats all :)
 
-2. Why not just use vperf ?
+Why not just use vperf ?
+===========================
 
 The reason why vperf was written was to try bandwidth testing using different protocols - like
 UDP using linux kernel stack, UDP crafted inside vperf, GRE using linux stack (see section at 
@@ -23,7 +25,8 @@ see the difference (if any) in throughput.
 Reading and understanding iperf and modifying it would have been an option, but that was clearly
 going to take more time than just write one real quick. And hence vperf.
 
-3. What data does vperf provide ?
+What data does vperf provide ?
+================================
 
 Whatever is the protocol chosen, vperf just provides one data as of today - the number of packets
 recieved in a one second interval on the reciever end. Reciever end prints that info and relays it
@@ -31,19 +34,22 @@ back to the sender, sender knows exactly how much it sent, so it also says how m
 sent in one second and how many actually reached the other end. The packet sizes are kept constant.
 Might enhance this in future to add latency/jitter reporting etc..
 
-4. Who can use vperf ?
+Who can use vperf ?
+=====================
 
 Like iperf, vperf is a tool/utility mostly for people with some network knowledge. So its not a 
 speedtest.com kind of utility that anyone can use. And of course like iperf here we need access to
 two machines running Linux where we can run the sender and reciever
 
-5. How do I compile vperf ?
+How do I compile vperf ?
+===========================
 
 The only machines we have tried vperf on are 12.04 Ubuntus. Though it should just work on any ubuntu 
 or any linux distro. Just get the source code and type "make" and you get "vperf" binary in the same
 directory, thats pretty much about it.
 
-6. Will all the protocols work for me ?
+Will all the protocols work for me ?
+=======================================
 
 Thats an important question. Depending on what modem you have at home, some might not work ! For example
 Netgear modems are known to not let GRE traffic pass through!! So if you have netgear wireless router
@@ -60,7 +66,8 @@ as some kind of "punishment". So be wary of doing that on comcast link.
 
 As for UDP, that works pretty well under all circumstances and with all boxes.
 
-7. Why does vperf have a crafted TCP ? Why not use Linux TCP ?
+Why does vperf have a crafted TCP ? Why not use Linux TCP ?
+===============================================================
 
 Well, the goal as stated before was primarily to push a TON of packets, and hide them under different skins,
 TCP being just one of the skins. If we use the Linux tcp stack, we will be subject to the usual slow start
@@ -72,7 +79,8 @@ we just ACK the largest sequence number recieved so far. Similarly while quittin
 the usual FIN/FIN-ACK etc.. so that the intermediate devices clean up the sessions properly and let us
 recreate a new session the next time.
 
-8. Notes about IP address and Mac address (--sip, --dip, --smac, --dmac)
+Notes about IP address and Mac address (--sip, --dip, --smac, --dmac)
+=======================================================================
 
 In the case of IP address, the "sip" (ie source ip) is always the IP address in the ifconfig output
 of whatever interface is used. But the "dip" (ie dest ip) is always the **PUBLIC** IP of the destination, not
@@ -97,13 +105,15 @@ IP address       HW type     Flags       HW address            Mask     Device
 And my mac address for 73.15.174.1 is 00:01:5c:65:46:46 and that should be my dmac
    
 
-9. Why are mac addresses needed in case of "crafted" packet option ?
+Why are mac addresses needed in case of "crafted" packet option ?
+===================================================================
 
 The reason is that for crafted packets, we bypass the Linux kernel protocol stack entirely. So we need to 
 create the entire packet with all the L2 and L3 headers, so we need to provide all the information including
 mac addresses
 
-10. How to send UDP using the Linux UDP stack
+How to send UDP using the Linux UDP stack
+=============================================
 
 Reciever: ./vperf --mode server --proto udp --sip <reciever-ip> --dip <sender-ip>
 
@@ -111,7 +121,8 @@ Sender:   ./vperf --mode client --proto udp --sip <sender-ip> --dip <reciever-ip
 
 NOTE: See the section on Additional Options to see how to send Linux UDP packets over a Linux GRE interface.
 
-11. How to send UDP using vperf crafted packets
+How to send UDP using vperf crafted packets
+=============================================
 
 Reciever: ./vperf --mode server --proto rudp --sip <reciever-ip> --dip <sender-ip> --smac <reciever-mac> --dmac <sender-mac> --intf eth0
 
@@ -120,7 +131,8 @@ Sender:   ./vperf --mode client --proto rudp --sip <sender-ip> --dip <reciever-i
 NOTE: eth0 is just as an example, use the correct interface you are connecting to internet with
 
 
-12. How to send GRE using vperf crafted packets
+How to send GRE using vperf crafted packets
+=============================================
 
 Reciever: ./vperf --mode server --proto gre --sip <reciever-ip> --dip <sender-ip> --smac <reciever-mac> --dmac <sender-mac> --intf eth0
 
@@ -128,7 +140,8 @@ Sender:   ./vperf --mode client --proto gre --sip <sender-ip> --dip <reciever-ip
 
 NOTE: eth0 is just as an example, use the correct interface you are connecting to internet with
 
-13. How to send TCP using vperf crafted packets
+How to send TCP using vperf crafted packets
+=============================================
 
 Reciever: ./vperf --mode server --proto tcp --sip <reciever-ip> --dip <sender-ip> --smac <reciever-mac> --dmac <sender-mac> --intf eth0
 
@@ -136,7 +149,8 @@ Sender:   ./vperf --mode client --proto tcp --sip <sender-ip> --dip <reciever-ip
 
 NOTE: eth0 is just as an example, use the correct interface you are connecting to internet with
 
-14. Additional Options
+Additional Options
+====================
 
     --time  : By default the sender just sends for 5 seconds and exits (closes TCP sessions if proto is tcp). This is done because
               if someone is running this test on the sender logged in remotely, then this blast traffic can kick out the remote
@@ -179,7 +193,8 @@ NOTE: eth0 is just as an example, use the correct interface you are connecting t
     --nosyn : For TCP, when vperf is launched, it tries to initiate a SYN/SYN-ACK sequence. If we specify "1" here as an option, then 
               we wont do a SYN/SYN-ACK, we will just assume the session is already created on the boxes in between sender and reciever.
 
-15. Terminating the program and Control-C behaviour
+Terminating the program and Control-C behaviour
+=================================================
 
 Control-C is used to terminate the program, but it has some additional tricks built in
 
@@ -203,11 +218,11 @@ Second Control-C will exit even if TCP sessions are pending closure
 
 
 Setting up GRE tunnel on Linux
---------------------------------
+=================================
 
-1.  modprobe ip_gre .. Standard ubuntu has ip_gre module by default, nothing to install
+*   modprobe ip_gre .. Standard ubuntu has ip_gre module by default, nothing to install
 
-2.  ip tunnel add tun1 mode gre remote 54.177.79.171 local 73.15.174.128 ttl 255
+*   ip tunnel add tun1 mode gre remote 54.177.79.171 local 73.15.174.128 ttl 255
     ip link set tun1 up
     ip addr add 10.10.10.1/24 dev tun1 
    
