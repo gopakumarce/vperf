@@ -220,7 +220,7 @@ sock_tcp_data_encap (uint8_t *buf, uint16_t len,
     socket = tcp_find_socket(saddr, daddr, sport, dport);
 
     th->source = htons(sport);
-    th->dest = htons(sport);
+    th->dest = htons(dport);
     th->seq = htonl(socket->my_seq);
     th->ack_seq = htonl(socket->rem_seq);
     th->doff = 5;

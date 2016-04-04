@@ -78,6 +78,7 @@ typedef enum {
 #define SEND_PKT_SIZE           1300
 #define SERVICE_PORT_DFLT       21234
 #define SERVICE_PORT            service_port
+#define SERVICE_PORT_SRC        service_port_src
 #define PORT_INCR_MAX           500
 #define ONE_SECOND              1000000000
 #define GRE_HDR_SIZE            4

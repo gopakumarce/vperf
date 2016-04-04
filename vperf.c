@@ -90,12 +90,14 @@ static struct option        long_options[] = {
     {"int", required_argument, &cmdtmp, 0},
     {"win", required_argument, &cmdtmp, 0},
     {"port", required_argument, &cmdtmp, 0},
+    {"sport", required_argument, &cmdtmp, 0},
     {"sincr", required_argument, &cmdtmp, 0},
     {"nosyn", required_argument, &cmdtmp, 0},
     {NULL, 0, NULL, 0},
 };
 
 uint16_t                    service_port = SERVICE_PORT_DFLT;
+uint16_t                    service_port_src = SERVICE_PORT_DFLT;
 
 static void *
 tcp_close_and_wait (void *arg)
@@ -335,7 +337,7 @@ sock_tcp_encap (uint8_t *buf, int len, uint16_t sport, uint16_t port)
     buf += sizeof(struct ip); // Leave room for IP
     th = buf;
     buf += sock_tcp_data_encap(buf, len, srcip.s_addr, dstip.s_addr,
-                               port, port);
+                               sport, port);
    
     /*
      * Now rewind back to encaps IP
@@ -539,9 +541,11 @@ socket_send (uint8_t *data, uint16_t dlen, uint8_t *txdata, uint16_t txlen,
             return (1);
         }
     } else if (raw_tcp) {
-        if (!incr) {            
-            buf = sock_tcp_encap(txdata, txlen, SERVICE_PORT, SERVICE_PORT);
+        if (!incr) {
+	    VLOG("SEND1 %d, %d\n", SERVICE_PORT_SRC, SERVICE_PORT);
+            buf = sock_tcp_encap(txdata, txlen, SERVICE_PORT_SRC, SERVICE_PORT);
         } else {
+	    VLOG("SEND2\n");
             buf = sock_tcp_encap(txdata, txlen, port, port);
         }
         memcpy(buf, data, dlen);
@@ -788,7 +792,7 @@ client_send (void)
 
         bw.cur_window = wnum;
         if (socket_send((uint8_t *)&bw, sizeof(bw), senddata,
-                        SEND_PKT_SIZE, 1)) {
+                        SEND_PKT_SIZE, 0)) {
             continue;
         }
         wpkts += 1;
@@ -822,6 +826,7 @@ usage (char *pgm)
             "--int for interval in msec, ie send pps/int amount of packets per intveral\n"
             "--win what multiple of --int for incrementing window\n"
             "--port port number to be used (default is 21234)\n"
+            "--sport source port number to be used (default is 21234)\n"
             "--nosyn if we want to ride on a previously created tcp connection (dont send SYN)\n"
             );
 }
@@ -899,6 +904,10 @@ handle_options (const char *name, char *arg)
     
     if (!strcmp(name, "port")) {
         service_port = atoi(arg);
+    }
+
+    if (!strcmp(name, "sport")) {
+        service_port_src = atoi(arg);
     }
 
     if (!strcmp(name, "sincr")) {

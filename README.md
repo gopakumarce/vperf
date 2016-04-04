@@ -180,6 +180,9 @@ Additional Options
 
               NOTE: Sender AND reciever needs to specify matching increment range
 
+    --sport : The source port to use to send TCP packets (not used in UDP case today). Also the source port is used only if --sincr is 0, 
+              that is we dont want to use the port increment option
+
     --int   : By default, the --pps (packets per "second") value specified is traslated to a packets-per-millisecond value. If
               packets-per-millisecond is too large a granularity, we can change that by specifying a larger number here. For example if
               we specify 10 here, we will divide the --pps rate into a packets-per-10milliseconds value, that number is also displayed
