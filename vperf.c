@@ -542,10 +542,8 @@ socket_send (uint8_t *data, uint16_t dlen, uint8_t *txdata, uint16_t txlen,
         }
     } else if (raw_tcp) {
         if (!incr) {
-	    VLOG("SEND1 %d, %d\n", SERVICE_PORT_SRC, SERVICE_PORT);
             buf = sock_tcp_encap(txdata, txlen, SERVICE_PORT_SRC, SERVICE_PORT);
         } else {
-	    VLOG("SEND2\n");
             buf = sock_tcp_encap(txdata, txlen, port, port);
         }
         memcpy(buf, data, dlen);
